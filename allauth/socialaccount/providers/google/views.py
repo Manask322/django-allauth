@@ -14,6 +14,7 @@ class GoogleOAuth2Adapter(OAuth2Adapter):
     access_token_url = 'https://accounts.google.com/o/oauth2/token'
     authorize_url = 'https://accounts.google.com/o/oauth2/auth'
     profile_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
+    people_url = 'https://people.googleapis.com/v1/people/me'
 
     def complete_login(self, request, app, token, **kwargs):
         resp = requests.get(self.profile_url,
@@ -21,6 +22,29 @@ class GoogleOAuth2Adapter(OAuth2Adapter):
                                     'alt': 'json'})
         resp.raise_for_status()
         extra_data = resp.json()
+        _email = extra_data['email']
+        if _email:
+            try:
+                get_user_data = False
+                user_model = get_user_model()
+                obj = user_model.objects.get(email=extra_data['email'])
+                if not obj.profile_created:
+                    get_user_data = True
+            except:
+                get_user_data = True
+            finally:
+                if get_user_data:
+                    _extra_data = requests.get(
+                        self.people_url + "?personFields=birthdays,genders",
+                        params={'access_token': token.token, 'alt': 'json'}
+                    )
+                    people_data = _extra_data.json()
+                    extra_data['people'] = people_data
+        login = self.get_provider() \
+            .sociallogin_from_response(request,
+                                       extra_data)
+        return login
+
         login = self.get_provider() \
             .sociallogin_from_response(request,
                                        extra_data)
