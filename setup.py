@@ -108,13 +108,13 @@ version = __import__('allauth').__version__
 METADATA = dict(
     name='django-allauth',
     version=version,
-    author='Raymond Penners',
-    author_email='raymond.penners@intenct.nl',
+    author='manas kinkar',
+    author_email='manask322@gmail.com',
     description='Integrated set of Django applications addressing'
     ' authentication, registration, account management as well as'
     ' 3rd party (social) account authentication.',
     long_description=long_description,
-    url='http://github.com/pennersr/django-allauth',
+    url='https://github.com/Manask322/django-allauth',
     keywords='django auth account social openid twitter facebook oauth'
     ' registration',
     tests_require=[],
